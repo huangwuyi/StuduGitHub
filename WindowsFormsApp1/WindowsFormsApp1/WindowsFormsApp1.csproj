@@ -60,6 +60,8 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="MessageUtil.cs" />
+    <Compile Include="Service_User.cs" />
+    <Compile Include="Service_Machine.cs" />
     <Compile Include="Welcome.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -14,7 +14,10 @@ namespace WindowsFormsApp1
 
 
         //连接字符串
-        static string strConn = "";
+        static string strConn = @"Data Source=DESKTOP-9TE8MK8\MSDB;Initial Catalog=MachineHome;User ID=sa;Password=zq123456;";
+
+
+        static string connectionString = @"Data Source=DESKTOP-9TE8MK8\MSDB;Initial Catalog=MachineHome;User ID=sa;Password=zq123456;";
 
 
 
@@ -65,10 +68,10 @@ namespace WindowsFormsApp1
 
 
 
-        public static DataSet GetDataSet(string strSQL)
-        {
-            return GetDataSet(strSQL, null);
-        }
+        //public static DataSet GetDataSet(string strSQL)
+        //{
+        //    return GetDataSet(strSQL, null);
+        //}
 
         public static DataSet GetDataSet(string strSQL, SqlParameter[] pas)
         {
@@ -403,5 +406,626 @@ namespace WindowsFormsApp1
         #endregion
 
 
+
+        #region ExecuteNonQuery命令
+        /// <summary>  
+        /// 对数据库执行增、删、改命令  
+        /// </summary>  
+        /// <param name="safeSql">T-Sql语句</param>  
+        /// <returns>受影响的记录数</returns>  
+        public static int ExecuteNonQuery(string safeSql)
+        {
+            using (SqlConnection Connection = new SqlConnection(connectionString))
+            {
+                Connection.Open();
+                SqlTransaction trans = Connection.BeginTransaction();
+                try
+                {
+                    SqlCommand cmd = new SqlCommand(safeSql, Connection);
+                    cmd.Transaction = trans;
+
+                    if (Connection.State != ConnectionState.Open)
+                    {
+                        Connection.Open();
+                    }
+                    int result = cmd.ExecuteNonQuery();
+                    trans.Commit();
+                    return result;
+                }
+                catch
+                {
+                    trans.Rollback();
+                    return 0;
+                }
+            }
+        }
+
+        /// <summary>  
+        /// 对数据库执行增、删、改命令  
+        /// </summary>  
+        /// <param name="sql">T-Sql语句</param>  
+        /// <param name="values">参数数组</param>  
+        /// <returns>受影响的记录数</returns>  
+        public static int ExecuteNonQuery(string sql, SqlParameter[] values)
+        {
+            using (SqlConnection Connection = new SqlConnection(connectionString))
+            {
+                Connection.Open();
+                SqlTransaction trans = Connection.BeginTransaction();
+                try
+                {
+                    SqlCommand cmd = new SqlCommand(sql, Connection);
+                    cmd.Transaction = trans;
+                    cmd.Parameters.AddRange(values);
+                    if (Connection.State != ConnectionState.Open)
+                    {
+                        Connection.Open();
+                    }
+                    int result = cmd.ExecuteNonQuery();
+                    trans.Commit();
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    trans.Rollback();
+                    return 0;
+                }
+            }
+        }
+        #endregion
+
+        #region ExecuteScalar命令
+        /// <summary>  
+        /// 查询结果集中第一行第一列的值  
+        /// </summary>  
+        /// <param name="safeSql">T-Sql语句</param>  
+        /// <returns>第一行第一列的值</returns>  
+        public static int ExecuteScalar(string safeSql)
+        {
+            using (SqlConnection Connection = new SqlConnection(connectionString))
+            {
+                if (Connection.State != ConnectionState.Open)
+                    Connection.Open();
+                SqlCommand cmd = new SqlCommand(safeSql, Connection);
+                int result = Convert.ToInt32(cmd.ExecuteScalar());
+                return result;
+            }
+        }
+
+        /// <summary>  
+        /// 查询结果集中第一行第一列的值  
+        /// </summary>  
+        /// <param name="sql">T-Sql语句</param>  
+        /// <param name="values">参数数组</param>  
+        /// <returns>第一行第一列的值</returns>  
+        public static int ExecuteScalar(string sql, SqlParameter[] values)
+        {
+            using (SqlConnection Connection = new SqlConnection(connectionString))
+            {
+                if (Connection.State != ConnectionState.Open)
+                    Connection.Open();
+                SqlCommand cmd = new SqlCommand(sql, Connection);
+                cmd.Parameters.AddRange(values);
+                int result = Convert.ToInt32(cmd.ExecuteScalar());
+                return result;
+            }
+        }
+        #endregion
+
+        #region ExecuteReader命令
+        /// <summary>  
+        /// 创建数据读取器  
+        /// </summary>  
+        /// <param name="safeSql">T-Sql语句</param>  
+        /// <param name="Connection">数据库连接</param>  
+        /// <returns>数据读取器对象</returns>  
+        public static SqlDataReader ExecuteReader(string safeSql, SqlConnection Connection)
+        {
+            if (Connection.State != ConnectionState.Open)
+                Connection.Open();
+            SqlCommand cmd = new SqlCommand(safeSql, Connection);
+            SqlDataReader reader = cmd.ExecuteReader();
+            return reader;
+        }
+
+        /// <summary>  
+        /// 创建数据读取器  
+        /// </summary>  
+        /// <param name="sql">T-Sql语句</param>  
+        /// <param name="values">参数数组</param>  
+        /// <param name="Connection">数据库连接</param>  
+        /// <returns>数据读取器</returns>  
+        public static SqlDataReader ExecuteReader(string sql, SqlParameter[] values, SqlConnection Connection)
+        {
+            if (Connection.State != ConnectionState.Open)
+                Connection.Open();
+            SqlCommand cmd = new SqlCommand(sql, Connection);
+            cmd.Parameters.AddRange(values);
+            SqlDataReader reader = cmd.ExecuteReader();
+            return reader;
+        }
+        #endregion
+
+        #region ExecuteDataTable命令
+        /// <summary>  
+        /// 执行指定数据库连接对象的命令,指定存储过程参数,返回DataTable  
+        /// </summary>  
+        /// <param name="type">命令类型(T-Sql语句或者存储过程)</param>  
+        /// <param name="safeSql">T-Sql语句或者存储过程的名称</param>  
+        /// <param name="values">参数数组</param>  
+        /// <returns>结果集DataTable</returns>  
+        public static DataTable ExecuteDataTable(CommandType type, string safeSql, params SqlParameter[] values)
+        {
+            using (SqlConnection Connection = new SqlConnection(connectionString))
+            {
+                if (Connection.State != ConnectionState.Open)
+                    Connection.Open();
+                DataSet ds = new DataSet();
+                SqlCommand cmd = new SqlCommand(safeSql, Connection);
+                cmd.CommandType = type;
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                da.Fill(ds);
+                return ds.Tables[0];
+            }
+        }
+
+        /// <summary>  
+        /// 执行指定数据库连接对象的命令,指定存储过程参数,返回DataTable  
+        /// </summary>  
+        /// <param name="safeSql">T-Sql语句</param>  
+        /// <returns>结果集DataTable</returns>  
+        public static DataTable ExecuteDataTable(string safeSql)
+        {
+            using (SqlConnection Connection = new SqlConnection(connectionString))
+            {
+                if (Connection.State != ConnectionState.Open)
+                    Connection.Open();
+                DataSet ds = new DataSet();
+                SqlCommand cmd = new SqlCommand(safeSql, Connection);
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                try
+                {
+                    da.Fill(ds);
+                }
+                catch (Exception ex)
+                {
+
+                }
+                return ds.Tables[0];
+            }
+        }
+
+        /// <summary>  
+        /// 执行指定数据库连接对象的命令,指定存储过程参数,返回DataTable  
+        /// </summary>  
+        /// <param name="sql">T-Sql语句</param>  
+        /// <param name="values">参数数组</param>  
+        /// <returns>结果集DataTable</returns>  
+        public static DataTable ExecuteDataTable(string sql, params SqlParameter[] values)
+        {
+            using (SqlConnection Connection = new SqlConnection(connectionString))
+            {
+                if (Connection.State != ConnectionState.Open)
+                    Connection.Open();
+                DataSet ds = new DataSet();
+                SqlCommand cmd = new SqlCommand(sql, Connection);
+                cmd.CommandTimeout = 0;
+                cmd.Parameters.AddRange(values);
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                da.Fill(ds);
+                return ds.Tables[0];
+            }
+        }
+        #endregion
+
+        #region GetDataSet命令
+        /// <summary>  
+        /// 取出数据  
+        /// </summary>  
+        /// <param name="safeSql">sql语句</param>  
+        /// <param name="tabName">DataTable别名</param>  
+        /// <param name="values"></param>  
+        /// <returns></returns>  
+        public static DataSet GetDataSet(string safeSql, string tabName, params SqlParameter[] values)
+        {
+            using (SqlConnection Connection = new SqlConnection(connectionString))
+            {
+                if (Connection.State != ConnectionState.Open)
+                    Connection.Open();
+                DataSet ds = new DataSet();
+                SqlCommand cmd = new SqlCommand(safeSql, Connection);
+
+                if (values != null)
+                    cmd.Parameters.AddRange(values);
+
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                try
+                {
+                    da.Fill(ds, tabName);
+                }
+                catch (Exception ex)
+                {
+
+                }
+                return ds;
+            }
+        }
+        #endregion
+
+        #region ExecureData 命令
+        /// <summary>  
+        /// 批量修改数据  
+        /// </summary>  
+        /// <param name="ds">修改过的DataSet</param>  
+        /// <param name="strTblName">表名</param>  
+        /// <returns></returns>  
+        public static int ExecureData(DataSet ds, string strTblName)
+        {
+            try
+            {
+                //创建一个数据库连接  
+                using (SqlConnection Connection = new SqlConnection(connectionString))
+                {
+                    if (Connection.State != ConnectionState.Open)
+                        Connection.Open();
+
+                    //创建一个用于填充DataSet的对象  
+                    SqlCommand myCommand = new SqlCommand("SELECT * FROM " + strTblName, Connection);
+                    SqlDataAdapter myAdapter = new SqlDataAdapter();
+                    //获取SQL语句，用于在数据库中选择记录  
+                    myAdapter.SelectCommand = myCommand;
+
+                    //自动生成单表命令，用于将对DataSet所做的更改与数据库更改相对应  
+                    SqlCommandBuilder myCommandBuilder = new SqlCommandBuilder(myAdapter);
+
+                    return myAdapter.Update(ds, strTblName);  //更新ds数据  
+                }
+
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
+        }
+
+        #endregion
+
+        public static int ExecuteSql(string SQLString)
+        {
+            SqlConnection conn = new SqlConnection();
+            SqlCommand sqlcmd = new SqlCommand();
+            conn.ConnectionString = connectionString;
+            conn.Open();
+            sqlcmd.Connection = conn;
+            sqlcmd.CommandText = SQLString;
+            sqlcmd.CommandType = CommandType.Text;
+
+            int rows = sqlcmd.ExecuteNonQuery();
+            sqlcmd.Dispose();
+            conn.Close();
+
+            return rows;
+        }
+
+        public static int ExecuteSql(params string[] Sqlstrings)
+        {
+            SqlConnection conn = new SqlConnection();
+            conn.ConnectionString = connectionString;
+            conn.Open();
+            SqlTransaction tran = conn.BeginTransaction();
+            SqlCommand sqlcmd = new SqlCommand();
+            sqlcmd.Connection = conn;
+            sqlcmd.Transaction = tran;
+            int result = 0;
+            try
+            {
+                foreach (string k in Sqlstrings)
+                {
+                    sqlcmd.CommandText = k;
+                    sqlcmd.CommandType = CommandType.Text;
+                    int rows = sqlcmd.ExecuteNonQuery();
+                }
+                tran.Commit();
+            }
+            catch
+            {
+                tran.Rollback();
+                result = 1;
+            }
+            finally
+            {
+                sqlcmd.Dispose();
+                conn.Close();
+            }
+            return result;
+        }
+
+        public static int ExecuteSql(string SQLString, params SqlParameter[] cmdParms)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    try
+                    {
+                        PrepareCommand(cmd, connection, null, SQLString, cmdParms);
+                        int rows = cmd.ExecuteNonQuery();
+                        cmd.Parameters.Clear();
+                        return rows;
+                    }
+                    catch (System.Data.SqlClient.SqlException E)
+                    {
+                        throw new Exception(E.Message);
+                    }
+                    finally
+                    {
+                    }
+                }
+            }
+        }
+
+        private static void PrepareCommand(SqlCommand cmd, SqlConnection conn, SqlTransaction trans, string cmdText, SqlParameter[] cmdParms)
+        {
+            if (conn.State != ConnectionState.Open)
+                conn.Open();
+
+            cmd.Connection = conn;
+            cmd.CommandText = cmdText;
+            if (trans != null)
+                cmd.Transaction = trans;
+            cmd.CommandType = CommandType.Text;
+            if (cmdParms != null)
+            {
+                foreach (SqlParameter parameter in cmdParms)
+                {
+                    if ((parameter.Direction == ParameterDirection.InputOutput || parameter.Direction == ParameterDirection.Input) &&
+                        (parameter.Value == null))
+                    {
+                        parameter.Value = DBNull.Value;
+                    }
+
+                    if (parameter.Direction == ParameterDirection.InputOutput || parameter.Direction == ParameterDirection.Input)
+                    {
+                        if (parameter.Value.ToString() == DateTime.MinValue.ToString() || parameter.Value.ToString() == int.MinValue.ToString())
+                        {
+                            parameter.Value = DBNull.Value;
+                        }
+                    }
+
+                    cmd.Parameters.Add(parameter);
+                }
+            }
+        }
+
+        public static object GetSingle(string SQLString)
+        {
+            SqlConnection connection = new SqlConnection(connectionString);
+            SqlCommand cmd = new SqlCommand(SQLString, connection);
+            object obj = new object();
+            try
+            {
+                connection.Open();
+                obj = cmd.ExecuteScalar();
+
+                cmd.Dispose();
+                connection.Dispose();
+                connection.Close();
+            }
+            catch (System.Data.SqlClient.SqlException E)
+            {
+                connection.Close();
+                throw new Exception(E.Message);
+            }
+
+            if ((Object.Equals(obj, null)) || (Object.Equals(obj, System.DBNull.Value)))
+            {
+                return null;
+            }
+            else
+            {
+                return obj;
+            }
+        }
+
+        public static object GetSingle(string SQLString, params SqlParameter[] cmdParms)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    try
+                    {
+                        PrepareCommand(cmd, connection, null, SQLString, cmdParms);
+
+                        Object obj = new object();
+                        obj = cmd.ExecuteScalar();
+                        cmd.Parameters.Clear();
+                        return obj;
+                    }
+                    catch (System.Data.SqlClient.SqlException E)
+                    {
+                        throw new Exception(E.Message);
+                    }
+                    finally
+                    {
+                    }
+                }
+            }
+        }
+
+        public static int GetMaxID(string colunmName, string tableName)
+        {
+            string SQLString = "select isnull(max(" + colunmName + "),0) from " + tableName;
+            object obj = DbHelperSQL.GetSingle(SQLString);
+            if (obj == null)
+            {
+                return 1;
+            }
+            else
+            {
+                return int.Parse(obj.ToString());
+            }
+
+        }
+
+        public static DataSet Query(string SQLString)
+        {
+            SqlConnection conn = new SqlConnection();
+            SqlCommand sqlcmd = new SqlCommand();
+            conn.ConnectionString = connectionString;
+            conn.Open();
+            sqlcmd.Connection = conn;
+            sqlcmd.CommandText = SQLString;
+            sqlcmd.CommandType = CommandType.Text;
+
+
+            SqlDataAdapter da = new SqlDataAdapter();
+            da.SelectCommand = sqlcmd;
+            DataSet ds = new DataSet();
+            da.Fill(ds, "Query");
+
+            da.Dispose();
+            sqlcmd.Dispose();
+            conn.Close();
+            conn.Dispose();
+            return ds;
+        }
+
+        public static DataSet Query(string SQLString, params SqlParameter[] cmdParms)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    try
+                    {
+                        PrepareCommand(cmd, connection, null, SQLString, cmdParms);
+                        SqlDataAdapter da = new SqlDataAdapter();
+                        da.SelectCommand = cmd;
+                        DataSet ds = new DataSet();
+                        da.Fill(ds, "Query");
+                        cmd.Parameters.Clear();
+                        return ds;
+                    }
+                    catch (System.Data.SqlClient.SqlException E)
+                    {
+                        throw new Exception(E.Message);
+                    }
+                    finally
+                    {
+                    }
+                }
+            }
+        }
+
+        public static bool Exists(string strSql)
+        {
+            object obj = GetSingle(strSql);
+            int cmdresult;
+            if ((Object.Equals(obj, null)) || (Object.Equals(obj, System.DBNull.Value)))
+            {
+                cmdresult = 0;
+            }
+            else
+            {
+                cmdresult = int.Parse(obj.ToString());
+            }
+            if (cmdresult == 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public static bool Exists(string strSql, params SqlParameter[] cmdParms)
+        {
+            object obj = GetSingle(strSql, cmdParms);
+            int cmdresult;
+            if ((Object.Equals(obj, null)) || (Object.Equals(obj, System.DBNull.Value)))
+            {
+                cmdresult = 0;
+            }
+            else
+            {
+                cmdresult = int.Parse(obj.ToString());
+            }
+            if (cmdresult == 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public static SqlDataReader RunProcedure(string storedProcName, IDataParameter[] parameters)
+        {
+            SqlConnection connection = new SqlConnection(connectionString);
+            SqlDataReader returnReader;
+
+            try
+            {
+                connection.Open();
+                SqlCommand command = BuildQueryCommand(connection, storedProcName, parameters);
+                command.CommandType = CommandType.StoredProcedure;
+                returnReader = command.ExecuteReader(CommandBehavior.CloseConnection);
+
+                command.Dispose();
+                connection.Dispose();
+                connection.Close();
+            }
+            catch (System.Data.SqlClient.SqlException E)
+            {
+                connection.Close();
+                throw new Exception(E.Message);
+            }
+
+            return returnReader;
+        }
+
+        public static DataSet RunProcedure(string storedProcName, IDataParameter[] parameters, string tableName)
+        {
+            try
+            {
+                using (SqlConnection connection = GetConnection())
+                {
+                    DataSet dataSet = new DataSet();
+                    connection.Open();
+                    SqlDataAdapter sqlDA = new SqlDataAdapter();
+                    sqlDA.SelectCommand = BuildQueryCommand(connection, storedProcName, parameters);
+                    sqlDA.Fill(dataSet);
+                    connection.Close();
+                    return dataSet;
+                }
+            }
+            catch (System.Data.SqlClient.SqlException E)
+            {
+                throw new Exception(E.Message);
+            }
+        }
+
+        private static SqlCommand BuildQueryCommand(SqlConnection connection, string storedProcName, IDataParameter[] parameters)
+        {
+            SqlCommand command = new SqlCommand(storedProcName, connection);
+            command.CommandType = CommandType.StoredProcedure;
+            if (parameters != null)
+            {
+                foreach (SqlParameter parameter in parameters)
+                {
+                    command.Parameters.Add(parameter);
+                }
+            }
+            return command;
+        }
+
+        public static SqlConnection GetConnection()
+        {
+            string currentConnectionString = connectionString;
+            return new SqlConnection(currentConnectionString);
+        }
     }
 }
