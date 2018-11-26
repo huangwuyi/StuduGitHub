@@ -37,12 +37,15 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(368, 360);
+            this.ClientSize = new System.Drawing.Size(400, 300);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "Welcome";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form1";
+            this.TopMost = true;
+            this.Load += new System.EventHandler(this.Welcome_Load);
+            this.Shown += new System.EventHandler(this.Welcome_Shown);
             this.ResumeLayout(false);
 
         }
