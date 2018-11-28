@@ -26,5 +26,10 @@ namespace WindowsFormsApp1
         {
             label1.Text = text;
         }
+
+        private void WaitingForm_Load(object sender, EventArgs e)
+        {
+            label1.Parent = pictureBox1;
+        }
     }
 }
