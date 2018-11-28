@@ -103,7 +103,7 @@ namespace WindowsFormsApp1
 
             Thread thread3 = new Thread(new ParameterizedThreadStart(ThreadStartFun));
             thread3.Name = "thread3";
-            thread3.Start(3 * fourthAverage);
+            thread3.Start(3 * fourthAverage);            
 
             thread0.Join();
             thread1.Join();
@@ -137,7 +137,8 @@ namespace WindowsFormsApp1
 
         private void ThreadStartFun(Object p)
         {
-            int fourthAverage = dt.Rows.Count / 4;
+            int fourthAverage = (int)Math.Ceiling((decimal)((decimal)dt.Rows.Count / (decimal)4));
+            //dt.Rows.Count / 4;
             for (int i = (int)p; i < Math.Min(dt.Rows.Count, (int)p + fourthAverage); i++)
             {
                 String IP = dt.Rows[i]["Ip"].ToString().Trim();
