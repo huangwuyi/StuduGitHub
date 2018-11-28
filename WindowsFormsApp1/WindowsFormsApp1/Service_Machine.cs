@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace WindowsFormsApp1
 {
-    class Service_Machine
+    public class Service_Machine
     {
         public partial class Table_Machine
         {
@@ -56,6 +56,22 @@ namespace WindowsFormsApp1
         }
 
         #region  BasicMethod
+        /// <summary>
+        /// 是否存在该记录
+        /// </summary>
+        public bool Exists(int Lsno)
+        {
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append("select count(1) from Table_Machine");
+            strSql.Append(" where Lsno=@Lsno");
+            SqlParameter[] parameters = {
+                    new SqlParameter("@Lsno", SqlDbType.Int,4)
+            };
+            parameters[0].Value = Lsno;
+
+            return DbHelperSQL.Exists(strSql.ToString(), parameters);
+        }
+
         /// <summary>
         /// 是否存在该记录
         /// </summary>

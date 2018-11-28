@@ -48,8 +48,8 @@ namespace WindowsFormsApp1
                 {
                     DataRow dr = dt.NewRow();
                     dr[0] = i;
-                    //dr[1] = "192.168.1." + i.ToString();
-                    dr[1] = "10.2.42." + i.ToString();
+                    dr[1] = "192.168.1." + i.ToString();
+                    //dr[1] = "10.2.42." + i.ToString();
                     dr[2] = i.ToString() + "设备";
                     dr[3] = i.ToString() + "设备";
                     dt.Rows.Add(dr);
