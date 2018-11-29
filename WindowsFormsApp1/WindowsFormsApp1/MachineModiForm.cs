@@ -10,14 +10,21 @@ using System.Windows.Forms;
 
 namespace WindowsFormsApp1
 {
-    public partial class MachineAddForm : Form
+    public partial class MachineModiForm : Form
     {
-        public MachineAddForm()
+        public MachineModiForm()
         {
             InitializeComponent();
         }
 
-        private void MachineAddForm_FormClosing(object sender, FormClosingEventArgs e)
+        public Service_Machine.Table_Machine t_Machine;
+
+        private void MachineModiForm_Load(object sender, EventArgs e)
+        {
+            userControl_Machine1.ShowValue(t_Machine);
+        }
+
+        private void MachineModiForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             this.DialogResult = DialogResult.OK;
         }

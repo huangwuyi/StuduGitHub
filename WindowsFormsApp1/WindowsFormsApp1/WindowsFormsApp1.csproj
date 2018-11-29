@@ -53,6 +53,12 @@
     <Compile Include="Login.Designer.cs">
       <DependentUpon>Login.cs</DependentUpon>
     </Compile>
+    <Compile Include="MachineModiForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MachineModiForm.Designer.cs">
+      <DependentUpon>MachineModiForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MachineAddForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -96,6 +102,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Login.resx">
       <DependentUpon>Login.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MachineModiForm.resx">
+      <DependentUpon>MachineModiForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MachineAddForm.resx">
       <DependentUpon>MachineAddForm.cs</DependentUpon>

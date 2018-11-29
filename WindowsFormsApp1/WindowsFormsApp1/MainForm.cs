@@ -37,25 +37,35 @@ namespace WindowsFormsApp1
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            dt.Columns.Add();
-            dt.Columns.Add("Ip");
-            dt.Columns.Add();
-            dt.Columns.Add();
+            
+        }
+
+        private void initialized()
+        {
+            dt = ser_Machine.GetList("").Tables[0];
 
             if (dt.Rows.Count == 0)
             {
-                for (int i = 0; i < 255; i++)
+                dt.Columns.Add();
+                dt.Columns.Add("Ip");
+                dt.Columns.Add();
+                dt.Columns.Add();
+                for (int i = 0; i < 10; i++)
                 {
                     DataRow dr = dt.NewRow();
                     dr[0] = i;
-                    dr[1] = "192.168.1." + i.ToString();
-                    //dr[1] = "10.2.42." + i.ToString();
+                    //dr[1] = "192.168.1." + i.ToString();
+                    dr[1] = "10.2.42." + i.ToString();
                     dr[2] = i.ToString() + "设备";
                     dr[3] = i.ToString() + "设备";
                     dt.Rows.Add(dr);
                 }
             }
             Console.WriteLine(dt.Rows.Count);
+
+            dt_OffLine.Columns.Clear();
+            dt_OnLine.Columns.Clear();
+
             dt_OnLine.Columns.Add();
             dt_OnLine.Columns.Add("Ip");
             dt_OnLine.Columns.Add();
@@ -69,8 +79,12 @@ namespace WindowsFormsApp1
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-            sw.Reset();
-            sw.Start();
+            refresh_MachineState();
+        }
+
+        private void refresh_MachineState()
+        {
+            initialized();
             global_i = 0;
 
             dt_OnLine.Rows.Clear();
@@ -79,7 +93,7 @@ namespace WindowsFormsApp1
             int core_count = Environment.ProcessorCount;
             core_count = 4;
             int fourthAverage = (int)Math.Ceiling((decimal)((decimal)dt.Rows.Count / (decimal)core_count));
-            
+
             //for (int i = 0; i < core_count; i++)
             //{
             //    Thread thread = new Thread(new ParameterizedThreadStart(ThreadStartFun));
@@ -103,7 +117,7 @@ namespace WindowsFormsApp1
 
             Thread thread3 = new Thread(new ParameterizedThreadStart(ThreadStartFun));
             thread3.Name = "thread3";
-            thread3.Start(3 * fourthAverage);            
+            thread3.Start(3 * fourthAverage);
 
             thread0.Join();
             thread1.Join();
@@ -161,12 +175,12 @@ namespace WindowsFormsApp1
                     dt_OffLine.Rows.Add(dr);
                 }
                 //Mutex mutex = new Mutex(true,"progress_i");
-                
+
                 lock (lockSomeThing)
                 {
                     global_i++;
-                    Console.WriteLine("当前线程是：" + Thread.CurrentThread.Name + ";当前的global_i:" 
-                        + global_i.ToString() +"当前的i:" + i);
+                    Console.WriteLine("当前线程是：" + Thread.CurrentThread.Name + ";当前的global_i:"
+                        + global_i.ToString() + "当前的i:" + i);
                 }
 
                 backgroundWorker1.ReportProgress(global_i * 100 / dt.Rows.Count, global_i.ToString() + "/" + dt.Rows.Count);
@@ -184,17 +198,34 @@ namespace WindowsFormsApp1
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             waitingForm.Close();
+            //MessageUtil.MessageInfo("刷新成功！");
+            dataGridView1.DataSource = null;
             dataGridView1.DataSource = dt_OnLine;
             label3.Text = dt_OnLine.Rows.Count.ToString();
+            dataGridView1.Refresh();
+            dataGridView2.DataSource = null;
             dataGridView2.DataSource = dt_OffLine;
             label4.Text = dt_OffLine.Rows.Count.ToString();
-            sw.Stop();
-            MessageBox.Show(sw.Elapsed.ToString());
+            dataGridView2.Refresh();
+            //sw.Stop();
+            //MessageBox.Show(sw.Elapsed.ToString());
         }
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
             //DataTable dt = ser_Machine.GetList("").Tables[0];
+            backgroundWorker1.RunWorkerAsync();
+            waitingForm.ShowDialog();
+        }
+
+        private void 机房设备维护ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MaintainForm maintainForm = new MaintainForm();
+            maintainForm.Show();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
             backgroundWorker1.RunWorkerAsync();
             waitingForm.ShowDialog();
         }

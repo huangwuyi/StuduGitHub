@@ -21,7 +21,7 @@ namespace WindowsFormsApp1
         private void button1_Click(object sender, EventArgs e)
         {
             Service_Machine.Table_Machine t_Machine = new Service_Machine.Table_Machine();
-            if (!(textBox1.Text.Trim().Length == 0))
+            if (!(textBox1.Text.Trim() == "0"))
             {
                 t_Machine = service_Machine.GetModel(int.Parse(textBox1.Text.Trim()));
             }
@@ -37,6 +37,7 @@ namespace WindowsFormsApp1
                 service_Machine.Add(t_Machine);
             }
             MessageUtil.MessageInfo("保存成功！");
+            ((Form)this.Parent).Close();
         }
 
         public void ShowValue(Service_Machine.Table_Machine t_Machin)
@@ -45,6 +46,7 @@ namespace WindowsFormsApp1
             textBox1.Visible = true;
             textBox1.Text = t_Machin.Lsno.ToString();
             textBox2.Text = t_Machin.Ip;
+            textBox2.ReadOnly = true;
             textBox3.Text = t_Machin.MachineName;
             textBox4.Text = t_Machin.MachineRemark;
         }

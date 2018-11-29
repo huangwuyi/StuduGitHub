@@ -1,6 +1,6 @@
 ﻿namespace WindowsFormsApp1
 {
-    partial class MachineAddForm
+    partial class MachineModiForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MachineAddForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MachineModiForm));
             this.userControl_Machine1 = new WindowsFormsApp1.UserControl_Machine();
             this.SuspendLayout();
             // 
@@ -39,17 +39,18 @@
             this.userControl_Machine1.Size = new System.Drawing.Size(471, 220);
             this.userControl_Machine1.TabIndex = 0;
             // 
-            // MachineAddForm
+            // MachineModiForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(497, 238);
             this.Controls.Add(this.userControl_Machine1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "MachineAddForm";
+            this.Name = "MachineModiForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "新增";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MachineAddForm_FormClosing);
+            this.Text = "修改";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MachineModiForm_FormClosing);
+            this.Load += new System.EventHandler(this.MachineModiForm_Load);
             this.ResumeLayout(false);
 
         }

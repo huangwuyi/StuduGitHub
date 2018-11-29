@@ -43,12 +43,24 @@ namespace WindowsFormsApp1
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
-
+            MachineAddForm maf = new MachineAddForm();
+            if (maf.ShowDialog() == DialogResult.OK)
+            {
+                refresh_data();
+            }
         }
 
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
-
+            MachineModiForm mmf = new MachineModiForm();
+            String ip = dataGridView1.CurrentRow.Cells[1].Value.ToString().Trim();
+            Service_Machine.Table_Machine t_Machine = new Service_Machine.Table_Machine();
+            t_Machine = service_Machine.GetModelByKey(ip);
+            mmf.t_Machine = t_Machine;
+            if (mmf.ShowDialog() == DialogResult.OK)
+            {
+                refresh_data();
+            }
         }
 
         private void toolStripButton3_Click(object sender, EventArgs e)

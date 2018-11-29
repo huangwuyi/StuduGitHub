@@ -241,6 +241,31 @@ namespace WindowsFormsApp1
             }
         }
 
+        /// <summary>
+        /// 得到一个对象实体
+        /// </summary>
+        public Table_Machine GetModelByKey(string Ip)
+        {
+
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append("select  top 1 Lsno,Ip,MachineName,MachineRemark from Table_Machine ");
+            strSql.Append(" where Ip=@Ip ");
+            SqlParameter[] parameters = {
+                    new SqlParameter("@Ip", SqlDbType.NVarChar,50)          };
+            parameters[0].Value = Ip;
+
+            Table_Machine model = new Table_Machine();
+            DataSet ds = DbHelperSQL.Query(strSql.ToString(), parameters);
+            if (ds.Tables[0].Rows.Count > 0)
+            {
+                return DataRowToModel(ds.Tables[0].Rows[0]);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
 
         /// <summary>
         /// 得到一个对象实体
