@@ -42,14 +42,19 @@ namespace WindowsFormsApp1
 
         private void initialized()
         {
-            dt = ser_Machine.GetList("").Tables[0];
+            try{
+                dt = ser_Machine.GetList("").Tables[0];
+            }catch { }
 
             if (dt.Rows.Count == 0)
             {
-                dt.Columns.Add();
-                dt.Columns.Add("Ip");
-                dt.Columns.Add();
-                dt.Columns.Add();
+                if (dt.Columns.Count == 0)
+                {
+                    dt.Columns.Add();
+                    dt.Columns.Add("Ip");
+                    dt.Columns.Add();
+                    dt.Columns.Add();
+                }
                 for (int i = 0; i < 10; i++)
                 {
                     DataRow dr = dt.NewRow();
@@ -163,7 +168,10 @@ namespace WindowsFormsApp1
                     dr[1] = dt.Rows[i][1];
                     dr[2] = dt.Rows[i][2];
                     dr[3] = dt.Rows[i][3];
-                    dt_OnLine.Rows.Add(dr);
+                    if (!dt_OnLine.Rows.Contains(dr[1]))
+                    {
+                        dt_OnLine.Rows.Add(dr);
+                    }
                 }
                 else
                 {
@@ -172,7 +180,10 @@ namespace WindowsFormsApp1
                     dr[1] = dt.Rows[i][1];
                     dr[2] = dt.Rows[i][2];
                     dr[3] = dt.Rows[i][3];
-                    dt_OffLine.Rows.Add(dr);
+                    if (!dt_OffLine.Rows.Contains(dr[1]))
+                    {
+                        dt_OffLine.Rows.Add(dr);
+                    }
                 }
                 //Mutex mutex = new Mutex(true,"progress_i");
 
