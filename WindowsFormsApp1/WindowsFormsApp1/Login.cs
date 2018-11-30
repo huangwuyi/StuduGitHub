@@ -42,7 +42,7 @@ namespace WindowsFormsApp1
                 MessageUtil.MessageError("密码不正确！");
                 return;
             }
-
+            Global.t_UserInfo = tui;
             ExitProgram = false;
             this.Close();
             MainForm mainForm = new MainForm();
@@ -55,6 +55,16 @@ namespace WindowsFormsApp1
         {
             if(ExitProgram)
                 Application.Exit();
+        }
+
+        private void Login_Enter(object sender, EventArgs e)
+        {
+            //button1.PerformClick();
+        }
+
+        private void textBox2_Enter(object sender, EventArgs e)
+        {
+            //button1.PerformClick();
         }
     }
 }

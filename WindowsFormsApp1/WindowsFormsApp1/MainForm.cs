@@ -37,7 +37,7 @@ namespace WindowsFormsApp1
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            
+            toolStripStatusLabel2.Text = Global.t_UserInfo.UerName;
         }
 
         private void initialized()
@@ -62,19 +62,24 @@ namespace WindowsFormsApp1
                 }
             }
             Console.WriteLine(dt.Rows.Count);
-
+            dt_OffLine.PrimaryKey = null;
+            dt_OnLine.PrimaryKey = null;
             dt_OffLine.Columns.Clear();
             dt_OnLine.Columns.Clear();
+            dt_OffLine.Rows.Clear();
+            dt_OnLine.Rows.Clear();
 
             dt_OnLine.Columns.Add();
             dt_OnLine.Columns.Add("Ip");
             dt_OnLine.Columns.Add();
             dt_OnLine.Columns.Add();
+            dt_OnLine.PrimaryKey = new DataColumn[] { dt_OnLine.Columns["Ip"] };
 
             dt_OffLine.Columns.Add();
             dt_OffLine.Columns.Add("Ip");
             dt_OffLine.Columns.Add();
             dt_OffLine.Columns.Add();
+            dt_OffLine.PrimaryKey = new DataColumn[] { dt_OffLine.Columns["Ip"] };
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
@@ -163,7 +168,11 @@ namespace WindowsFormsApp1
                     dr[1] = dt.Rows[i][1];
                     dr[2] = dt.Rows[i][2];
                     dr[3] = dt.Rows[i][3];
-                    dt_OnLine.Rows.Add(dr);
+                    if (dt_OnLine.Rows.Contains(dr[1])) { }
+                    else
+                    {
+                        dt_OnLine.Rows.Add(dr);
+                    }
                 }
                 else
                 {
@@ -172,7 +181,11 @@ namespace WindowsFormsApp1
                     dr[1] = dt.Rows[i][1];
                     dr[2] = dt.Rows[i][2];
                     dr[3] = dt.Rows[i][3];
-                    dt_OffLine.Rows.Add(dr);
+                    if (dt_OffLine.Rows.Contains(dr[1])) { }
+                    else
+                    {
+                        dt_OffLine.Rows.Add(dr);
+                    }
                 }
                 //Mutex mutex = new Mutex(true,"progress_i");
 
@@ -183,7 +196,7 @@ namespace WindowsFormsApp1
                         + global_i.ToString() + "当前的i:" + i);
                 }
 
-                backgroundWorker1.ReportProgress(global_i * 100 / dt.Rows.Count, global_i.ToString() + "/" + dt.Rows.Count);
+                backgroundWorker1.ReportProgress(global_i * 100 / dt.Rows.Count, "正在扫描设备，当前进度" + global_i.ToString() + "/" + dt.Rows.Count);
             }
         }
 
@@ -228,6 +241,11 @@ namespace WindowsFormsApp1
         {
             backgroundWorker1.RunWorkerAsync();
             waitingForm.ShowDialog();
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Application.Exit();
         }
 
         private bool PingGo(String IP)

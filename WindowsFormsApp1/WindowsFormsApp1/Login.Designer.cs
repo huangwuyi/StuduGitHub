@@ -74,11 +74,14 @@
             // 
             this.textBox2.Location = new System.Drawing.Point(159, 107);
             this.textBox2.Name = "textBox2";
+            this.textBox2.PasswordChar = '*';
             this.textBox2.Size = new System.Drawing.Size(213, 21);
             this.textBox2.TabIndex = 4;
+            this.textBox2.Enter += new System.EventHandler(this.textBox2_Enter);
             // 
             // Login
             // 
+            this.AcceptButton = this.button1;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(384, 261);
@@ -92,6 +95,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "登录";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Login_FormClosing);
+            this.Enter += new System.EventHandler(this.Login_Enter);
             this.ResumeLayout(false);
             this.PerformLayout();
 
