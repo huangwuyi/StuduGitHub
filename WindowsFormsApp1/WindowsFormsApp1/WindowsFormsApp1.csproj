@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DbHelperSQL.cs" />
+    <Compile Include="Global.cs" />
     <Compile Include="Login.cs">
       <SubType>Form</SubType>
     </Compile>
