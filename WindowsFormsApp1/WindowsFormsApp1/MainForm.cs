@@ -26,6 +26,7 @@ namespace WindowsFormsApp1
         {
             this.Dispose();
             this.Close();
+            Application.Exit();
         }
         DataTable dt = new DataTable();
         DataTable dt_OnLine = new DataTable();
