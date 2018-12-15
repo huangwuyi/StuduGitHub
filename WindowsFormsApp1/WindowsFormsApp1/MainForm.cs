@@ -43,9 +43,14 @@ namespace WindowsFormsApp1
         private void initialized()
         {
             dt = ser_Machine.GetList("").Tables[0];
+            
 
             if (dt.Rows.Count == 0)
             {
+                MessageBox.Show("请维护机房机器列表！");
+                MaintainForm mf = new MaintainForm();
+                mf.Show();
+                return;
                 dt.Columns.Add();
                 dt.Columns.Add("Ip");
                 dt.Columns.Add();
@@ -69,16 +74,16 @@ namespace WindowsFormsApp1
             dt_OffLine.Rows.Clear();
             dt_OnLine.Rows.Clear();
 
-            dt_OnLine.Columns.Add();
+            dt_OnLine.Columns.Add("序号");
             dt_OnLine.Columns.Add("Ip");
-            dt_OnLine.Columns.Add();
-            dt_OnLine.Columns.Add();
+            dt_OnLine.Columns.Add("机器名称");
+            dt_OnLine.Columns.Add("机器备注");
             dt_OnLine.PrimaryKey = new DataColumn[] { dt_OnLine.Columns["Ip"] };
 
-            dt_OffLine.Columns.Add();
+            dt_OffLine.Columns.Add("序号");
             dt_OffLine.Columns.Add("Ip");
-            dt_OffLine.Columns.Add();
-            dt_OffLine.Columns.Add();
+            dt_OffLine.Columns.Add("机器名称");
+            dt_OffLine.Columns.Add("机器备注");
             dt_OffLine.PrimaryKey = new DataColumn[] { dt_OffLine.Columns["Ip"] };
         }
 
