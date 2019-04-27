@@ -14,10 +14,8 @@ namespace WindowsFormsApp1
 
 
         //连接字符串
-        static string strConn = //@"Data Source=SEELE-PC;Initial Catalog=MachineHome;User ID=sa;Password=123456;";
-        @"Data Source=DESKTOP-9TE8MK8\MSDB;Initial Catalog=MachineHome;User ID=sa;Password=zq123456;";
-        static string connectionString = strConn;
-        //@"Data Source=DESKTOP-9TE8MK8\MSDB;Initial Catalog=MachineHome;User ID=sa;Password=zq123456;";
+        static string strConn = @"Data Source=127.0.0.1\MSDB;Initial Catalog=MachineHome;User ID=sa;Password=zq123456;";
+        static string connectionString = strConn;        
 
 
 
