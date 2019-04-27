@@ -248,6 +248,7 @@ namespace WindowsFormsApp1
             dataGridView2.Refresh();
             //sw.Stop();
             //MessageBox.Show(sw.Elapsed.ToString());
+            listView1.Items.Clear();
             listView1.BeginUpdate();
             for (int i = 0; i < dt.Rows.Count; i++)
             {

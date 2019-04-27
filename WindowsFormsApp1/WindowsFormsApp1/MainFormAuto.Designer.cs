@@ -167,7 +167,7 @@
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(161, 23);
             this.button3.TabIndex = 6;
-            this.button3.Text = "添加在线设备到虚拟机房";
+            this.button3.Text = "添加离线设备到虚拟机房";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
