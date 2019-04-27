@@ -13,11 +13,11 @@ using System.Windows.Forms;
 
 namespace WindowsFormsApp1
 {
-    public partial class MainForm : Form
+    public partial class MainFormHome : Form
     {
         Service_Machine ser_Machine = new Service_Machine();
         int on_line = 0, off_line = 0;
-        public MainForm()
+        public MainFormHome()
         {
             InitializeComponent();
         }
@@ -39,12 +39,17 @@ namespace WindowsFormsApp1
         private void MainForm_Load(object sender, EventArgs e)
         {
             toolStripStatusLabel2.Text = Global.t_UserInfo.UerName;
+            bindHome(); comboBox1.SelectedIndex = 0;
         }
 
-        private void initialized()
+        private void initialized2222()
         {
-            dt = ser_Machine.GetList("").Tables[0];
-            
+            //bindHome();
+            Func<String> func = new Func<string>(()=> {
+                return comboBox1.SelectedValue.ToString().Trim(); });
+            dt = ser_Machine.GetList(" ip in (select ip from table_home_machine where home='"
+                + Invoke(func).ToString().Trim()+ "')").Tables[0];
+            dt.Columns.Add("State");
 
             if (dt.Rows.Count == 0)
             {
@@ -87,7 +92,14 @@ namespace WindowsFormsApp1
             dt_OffLine.Columns.Add("机器备注");
             dt_OffLine.PrimaryKey = new DataColumn[] { dt_OffLine.Columns["Ip"] };
         }
-
+        private void bindHome()
+        {
+            Service_Home service_Home = new Service_Home();
+            DataTable dt = service_Home.GetList("").Tables[0];
+            comboBox1.DataSource = dt;
+            comboBox1.ValueMember = dt.Columns[1].ToString().Trim();
+            comboBox1.DisplayMember = dt.Columns[1].ToString().Trim();
+        }
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             refresh_MachineState();
@@ -95,7 +107,7 @@ namespace WindowsFormsApp1
 
         private void refresh_MachineState()
         {
-            initialized();
+            initialized2222();
             global_i = 0;
 
             dt_OnLine.Rows.Clear();
@@ -174,11 +186,15 @@ namespace WindowsFormsApp1
                     dr[1] = dt.Rows[i][1];
                     dr[2] = dt.Rows[i][2];
                     dr[3] = dt.Rows[i][3];
-                    if (dt_OnLine.Rows.Contains(dr[1])) { }
-                    else
+                    lock (dt_OnLine)
                     {
-                        dt_OnLine.Rows.Add(dr);
+                        if (dt_OnLine.Rows.Contains(dr[1])) { }
+                        else
+                        {
+                            dt_OnLine.Rows.Add(dr);
+                        }
                     }
+                    dt.Rows[i]["State"] = 1;
                 }
                 else
                 {
@@ -187,11 +203,15 @@ namespace WindowsFormsApp1
                     dr[1] = dt.Rows[i][1];
                     dr[2] = dt.Rows[i][2];
                     dr[3] = dt.Rows[i][3];
-                    if (dt_OffLine.Rows.Contains(dr[1])) { }
-                    else
+                    lock (dt_OffLine)
                     {
-                        dt_OffLine.Rows.Add(dr);
+                        if (dt_OffLine.Rows.Contains(dr[1])) { }
+                        else
+                        {
+                            dt_OffLine.Rows.Add(dr);
+                        }
                     }
+                    dt.Rows[i]["State"] = 0;
                 }
                 //Mutex mutex = new Mutex(true,"progress_i");
 
@@ -228,6 +248,15 @@ namespace WindowsFormsApp1
             dataGridView2.Refresh();
             //sw.Stop();
             //MessageBox.Show(sw.Elapsed.ToString());
+            listView1.BeginUpdate();
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                ListViewItem lvi = new ListViewItem();
+                lvi.Text = dt.Rows[i][1].ToString().Trim();
+                lvi.ImageIndex = int.Parse(dt.Rows[i][4].ToString().Trim());
+                listView1.Items.Add(lvi);
+            }
+            listView1.EndUpdate();
         }
 
         private void MainForm_Shown(object sender, EventArgs e)
@@ -251,7 +280,7 @@ namespace WindowsFormsApp1
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Application.Exit();
+            //Application.Exit();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -260,10 +289,29 @@ namespace WindowsFormsApp1
             mainFormAuto.ShowDialog();
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void MainFormHome_DoubleClick(object sender, EventArgs e)
         {
-            MainFormHome mainFormHome = new MainFormHome();
-            mainFormHome.ShowDialog();
+            if (this.listView1.FocusedItem != null)
+
+            {
+                if (this.listView1.SelectedItems != null)
+                {
+                    foreach (ListViewItem item in this.listView1.SelectedItems)
+                    {
+                        //MessageBox.Show(item.SubItems[0].ToString());
+                        item.ImageIndex = Math.Abs(item.ImageIndex + (-1));
+                    }
+                }
+            }
+        }
+
+        private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            ListViewHitTestInfo info = listView1.HitTest(e.X, e.Y);
+            if (info.Item != null)
+            {
+                info.Item.ImageIndex = Math.Abs(info.Item.ImageIndex + (-1));
+            }
         }
 
         private bool PingGo(String IP)

@@ -54,6 +54,12 @@
     </Compile>
     <Compile Include="DbHelperSQL.cs" />
     <Compile Include="Global.cs" />
+    <Compile Include="HomeMaintain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HomeMaintain.Designer.cs">
+      <DependentUpon>HomeMaintain.cs</DependentUpon>
+    </Compile>
     <Compile Include="Login.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -71,6 +77,12 @@
     </Compile>
     <Compile Include="MachineAddForm.Designer.cs">
       <DependentUpon>MachineAddForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainFormHome.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainFormHome.Designer.cs">
+      <DependentUpon>MainFormHome.cs</DependentUpon>
     </Compile>
     <Compile Include="MainFormAuto.cs">
       <SubType>Form</SubType>
@@ -91,6 +103,8 @@
       <DependentUpon>MaintainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="MessageUtil.cs" />
+    <Compile Include="Service_Home.cs" />
+    <Compile Include="Service_Home_Machine.cs" />
     <Compile Include="Service_User.cs" />
     <Compile Include="Service_Machine.cs" />
     <Compile Include="UserControl_Machine.cs">
@@ -116,6 +130,9 @@
     <EmbeddedResource Include="AutoScanForm.resx">
       <DependentUpon>AutoScanForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="HomeMaintain.resx">
+      <DependentUpon>HomeMaintain.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Login.resx">
       <DependentUpon>Login.cs</DependentUpon>
     </EmbeddedResource>
@@ -124,6 +141,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MachineAddForm.resx">
       <DependentUpon>MachineAddForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainFormHome.resx">
+      <DependentUpon>MainFormHome.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainFormAuto.resx">
       <DependentUpon>MainFormAuto.cs</DependentUpon>
@@ -167,6 +187,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Images\desktop.png" />
+    <Content Include="Images\desktop_offline.png" />
     <Content Include="Images\login.png" />
     <Content Include="Images\welcome2 .jpg" />
     <Content Include="Images\welcome2.png" />

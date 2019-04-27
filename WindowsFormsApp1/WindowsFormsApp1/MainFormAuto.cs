@@ -38,7 +38,9 @@ namespace WindowsFormsApp1
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            //toolStripStatusLabel2.Text = Global.t_UserInfo.UerName;
+            toolStripStatusLabel2.Text = Global.t_UserInfo.UerName;
+            bindHome();
+            tabControl1.SelectedIndex = 1;
         }
 
         private void initialized()
@@ -161,7 +163,14 @@ namespace WindowsFormsApp1
                 //接受Ping返回值
                 PingReply reply = ping.Send(strIP, 1000);
                 //Ping通
-                return true;
+                if (reply.Status == IPStatus.Success)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             catch
             {
@@ -333,7 +342,101 @@ namespace WindowsFormsApp1
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Application.Exit();
+            //Application.Exit();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            //
+            try
+            {
+                string lsno = comboBox1.SelectedValue.ToString().Trim();
+                if (!new Service_Home().Exists(lsno))
+                {
+                    MessageBox.Show("先选择机房");
+                    return;
+                }
+
+                for (int i = 0; i < dataGridView1.Rows.Count; i++)
+                {
+                    Service_Machine.Table_Machine table_Machine = new Service_Machine.Table_Machine();
+                    table_Machine.Ip = dataGridView1.Rows[i].Cells[1].Value.ToString().Trim();
+                    table_Machine.MachineName = dataGridView1.Rows[i].Cells[2].Value.ToString().Trim();
+                    table_Machine.MachineRemark = lsno;// dataGridView1.Rows[i].Cells[3].Value.ToString().Trim();
+                    Service_Machine service_Machine = new Service_Machine();
+                    if (!service_Machine.Exists(table_Machine.Ip))
+                    {
+                        service_Machine.Add(table_Machine);
+                    }
+                    Service_Home_Machine.Table_Home_Machine table_Home_Machine = new Service_Home_Machine.Table_Home_Machine();
+                    Service_Home_Machine service_Home_Machine = new Service_Home_Machine();
+                    table_Home_Machine.Ip = table_Machine.Ip;
+                    table_Home_Machine.Home = lsno;
+                    if (!service_Home_Machine.Exists(table_Home_Machine.Home, table_Home_Machine.Ip))
+                    {
+                        service_Home_Machine.Add(table_Home_Machine);
+                    }
+                }
+                MessageBox.Show("添加成功！");
+            }
+            catch
+            {
+                MessageBox.Show("添加失败！");
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string lsno = comboBox1.SelectedValue.ToString().Trim();
+                if (!new Service_Home().Exists(lsno))
+                {
+                    MessageBox.Show("先选择机房");
+                    return;
+                }
+                for (int i = 0; i < dataGridView2.Rows.Count; i++)
+                {
+                    Service_Machine.Table_Machine table_Machine = new Service_Machine.Table_Machine();
+                    table_Machine.Ip = dataGridView2.Rows[i].Cells[1].Value.ToString().Trim();
+                    table_Machine.MachineName = dataGridView2.Rows[i].Cells[2].Value.ToString().Trim();
+                    table_Machine.MachineRemark = lsno;// dataGridView2.Rows[i].Cells[3].Value.ToString().Trim();
+                    Service_Machine service_Machine = new Service_Machine();
+                    if (!service_Machine.Exists(table_Machine.Ip))
+                    {
+                        service_Machine.Add(table_Machine);
+                    }
+                    Service_Home_Machine.Table_Home_Machine table_Home_Machine = new Service_Home_Machine.Table_Home_Machine();
+                    Service_Home_Machine service_Home_Machine = new Service_Home_Machine();
+                    table_Home_Machine.Ip = table_Machine.Ip;
+                    table_Home_Machine.Home = lsno;
+                    if (!service_Home_Machine.Exists(table_Home_Machine.Home, table_Home_Machine.Ip))
+                    {
+                        service_Home_Machine.Add(table_Home_Machine);
+                    }
+                }
+                MessageBox.Show("添加成功！");
+            }
+            catch
+            {
+                MessageBox.Show("添加失败！");
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            HomeMaintain homeMaintain = new HomeMaintain();
+            homeMaintain.ShowDialog();
+            bindHome();
+        }
+
+        private void bindHome()
+        {
+            Service_Home service_Home = new Service_Home();
+            DataTable dt = service_Home.GetList("").Tables[0];
+            comboBox1.DataSource = dt;
+            comboBox1.ValueMember = dt.Columns[1].ToString().Trim();
+            comboBox1.DisplayMember = dt.Columns[1].ToString().Trim();
         }
 
         private bool PingGo(String IP)
