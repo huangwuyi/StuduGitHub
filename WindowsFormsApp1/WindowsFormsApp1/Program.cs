@@ -18,6 +18,7 @@ namespace WindowsFormsApp1
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Welcome());
             //Application.Run(new MainForm());
+            //Application.Run(new MainFormAuto());
         }
     }
 }

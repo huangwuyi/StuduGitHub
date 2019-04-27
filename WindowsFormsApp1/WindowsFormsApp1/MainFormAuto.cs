@@ -13,11 +13,11 @@ using System.Windows.Forms;
 
 namespace WindowsFormsApp1
 {
-    public partial class MainForm : Form
+    public partial class MainFormAuto : Form
     {
         Service_Machine ser_Machine = new Service_Machine();
         int on_line = 0, off_line = 0;
-        public MainForm()
+        public MainFormAuto()
         {
             InitializeComponent();
         }
@@ -38,13 +38,35 @@ namespace WindowsFormsApp1
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            toolStripStatusLabel2.Text = Global.t_UserInfo.UerName;
+            //toolStripStatusLabel2.Text = Global.t_UserInfo.UerName;
         }
 
         private void initialized()
         {
             dt = ser_Machine.GetList("").Tables[0];
-            
+
+            dt.PrimaryKey = null;            
+            dt.Columns.Clear();
+            dt.Rows.Clear();
+            dt_OnLine.PrimaryKey = new DataColumn[] { dt_OnLine.Columns["Ip"] };
+
+            dt.Columns.Add("序号");
+            dt.Columns.Add("Ip");
+            dt.Columns.Add("机器名称");
+            dt.Columns.Add("机器备注");
+            //
+            string gateway = GetGateway();
+            MessageBox.Show("当前网关是"+gateway+";点击确定自动扫描当前网关；");
+            string gatewayleft = gateway.Substring(0, gateway.Length - 1);
+            for (int i = 0; i < 20; i++)
+            {
+                DataRow dr = dt.NewRow();
+                dr[0] = i;
+                dr["ip"] = gatewayleft + i.ToString();
+                dr[2] = "自动扫描ip" + i.ToString();
+                dr[3] = "";
+                dt.Rows.Add(dr);
+            }
 
             if (dt.Rows.Count == 0)
             {
@@ -78,7 +100,7 @@ namespace WindowsFormsApp1
             dt_OnLine.Columns.Add("序号");
             dt_OnLine.Columns.Add("Ip");
             dt_OnLine.Columns.Add("机器名称");
-            dt_OnLine.Columns.Add("机器备注");
+            dt_OnLine.Columns.Add("机器备注");            
             dt_OnLine.PrimaryKey = new DataColumn[] { dt_OnLine.Columns["Ip"] };
 
             dt_OffLine.Columns.Add("序号");
@@ -86,6 +108,66 @@ namespace WindowsFormsApp1
             dt_OffLine.Columns.Add("机器名称");
             dt_OffLine.Columns.Add("机器备注");
             dt_OffLine.PrimaryKey = new DataColumn[] { dt_OffLine.Columns["Ip"] };
+        }
+
+        private string GetGateway()
+        {
+            //网关地址
+            string strGateway = "";
+            //获取所有网卡
+            NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
+            //遍历数组
+            foreach (var netWork in nics)
+            {
+                //单个网卡的IP对象
+                IPInterfaceProperties ip = netWork.GetIPProperties();
+                //获取该IP对象的网关
+                GatewayIPAddressInformationCollection gateways = ip.GatewayAddresses;
+                foreach (var gateWay in gateways)
+                {
+                    //如果能够Ping通网关
+                    if (IsPingIP(gateWay.Address.ToString()))
+                    {
+                        //得到网关地址
+                        strGateway = gateWay.Address.ToString();
+                        //跳出循环
+                        break;
+                    }
+                }
+
+                //如果已经得到网关地址
+                if (strGateway.Length > 0)
+                {
+                    //跳出循环
+                    break;
+                }
+            }
+
+            //返回网关地址
+            return strGateway;
+        }
+
+        /// <summary>
+        /// 尝试Ping指定IP是否能够Ping通
+        /// </summary>
+        /// <param name="strIP">指定IP</param>
+        /// <returns>true 是 false 否</returns>
+        public static bool IsPingIP(string strIP)
+        {
+            try
+            {
+                //创建Ping对象
+                Ping ping = new Ping();
+                //接受Ping返回值
+                PingReply reply = ping.Send(strIP, 1000);
+                //Ping通
+                return true;
+            }
+            catch
+            {
+                //Ping失败
+                return false;
+            }
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
@@ -252,12 +334,6 @@ namespace WindowsFormsApp1
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             Application.Exit();
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            MainFormAuto mainFormAuto = new MainFormAuto();
-            mainFormAuto.ShowDialog();
         }
 
         private bool PingGo(String IP)
